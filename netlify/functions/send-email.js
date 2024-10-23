@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const querystring = require('querystring');
 
 exports.handler = async (event, context) => {
   if (event.httpMethod !== 'POST') {
@@ -8,7 +9,9 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const { name, email, subject, msg } = JSON.parse(event.body);
+  // Parse form-encoded data (application/x-www-form-urlencoded)
+  const formData = querystring.parse(event.body);
+  const { name, email, subject, msg } = formData;
 
   if (!name || !email || !subject || !msg) {
     return {
@@ -27,7 +30,7 @@ exports.handler = async (event, context) => {
 
   const mailOptions = {
     from: email,
-    to: 'odiedopaul@gmail.com', // Replace with your email
+    to: 'odiedopaul@gmail.com',
     subject: `New message from ${name}: ${subject}`,
     text: msg,
   };
