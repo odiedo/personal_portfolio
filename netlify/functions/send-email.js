@@ -27,7 +27,7 @@ exports.handler = async (event, context) => {
 
   const mailOptions = {
     from: email,
-    to: 'your-email@example.com', // Replace with your email
+    to: 'odiedopaul@gmail.com', // Replace with your email
     subject: `New message from ${name}: ${subject}`,
     text: msg,
   };
