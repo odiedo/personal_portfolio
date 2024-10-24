@@ -185,63 +185,56 @@
   // Contact Form
   function formValidation() {
     if ($.exists('#contact-form #submit')) {
-        $('#st-alert').hide();
-        $('#contact-form #submit').on('click', function () {
-            var name = $('#name').val();
-            var subject = $('#subject').val();
-            var phone = $('#phone').val();
-            var email = $('#email').val();
-            var msg = $('#msg').val();
-            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      $('#st-alert').hide();
+      $('#contact-form #submit').on('click', function () {
+        var name = $('#name').val();
+        var subject = $('#subject').val();
+        var phone = $('#phone').val();
+        var email = $('#email').val();
+        var msg = $('#msg').val();
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-            if (!regex.test(email)) {
-                $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
-                return false;
+        if (!regex.test(email)) {
+          $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
+          return false;
+        }
+
+        name = $.trim(name);
+        subject = $.trim(subject);
+        phone = $.trim(phone);
+        email = $.trim(email);
+        msg = $.trim(msg);
+
+        if (name != '' && email != '' && msg != '') {
+          var values = "name=" + name +
+            "&subject=" + subject +
+            "&phone=" + phone +
+            "&email=" + email +
+            "&msg=" + msg;
+          $.ajax({
+            type: "POST",
+            url: "/.netlify/functions/send-email",
+            data: values,
+            success: function () {
+              $('#name').val('');
+              $('#subject').val('');
+              $('#phone').val('');
+              $('#email').val('');
+              $('#msg').val('');
+
+              $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Email has been sent successfully.</div>');
+              setTimeout(function () {
+                $('#st-alert').fadeOut('slow');
+              }, 4000);
             }
-
-            name = $.trim(name);
-            subject = $.trim(subject);
-            phone = $.trim(phone);
-            email = $.trim(email);
-            msg = $.trim(msg);
-
-            if (name !== '' && email !== '' && msg !== '') {
-                var values = JSON.stringify({
-                    name: name,
-                    subject: subject,
-                    phone: phone,
-                    email: email,
-                    msg: msg
-                });
-                $.ajax({
-                    type: "POST",
-                    url: "/.netlify/functions/send-email",
-                    contentType: "application/json",
-                    data: values,
-                    success: function () {
-                        $('#name').val('');
-                        $('#subject').val('');
-                        $('#phone').val('');
-                        $('#email').val('');
-                        $('#msg').val('');
-
-                        $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Email has been sent successfully.</div>');
-                        setTimeout(function () {
-                            $('#st-alert').fadeOut('slow');
-                        }, 4000);
-                    },
-                    error: function () {
-                        $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> Something went wrong.</div>');
-                    }
-                });
-            } else {
-                $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
-            }
-            return false;
-        });
+          });
+        } else {
+          $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
+        }
+        return false;
+      });
     }
-}
-
+  }
 
 
   /*--------------------------------------------------------------
