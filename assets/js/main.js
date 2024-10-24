@@ -183,7 +183,7 @@
     7. Ajax Contact Form And Appointment
   --------------------------------------------------------------*/
   // Contact Form
-  $(document).ready(function() {
+
     // Form submission handling for contact form
     $('#contact-form').on('submit', function(event) {
         event.preventDefault(); // Prevent default form submission
@@ -239,7 +239,6 @@
         $('.toast').toast({ delay: 5000 }); // Set duration for the toast
         $('.toast').toast('show'); // Show the toast
     }
-});
 
 
 
