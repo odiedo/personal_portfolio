@@ -183,62 +183,64 @@
     7. Ajax Contact Form And Appointment
   --------------------------------------------------------------*/
   // Contact Form
+  function formValidation() {
+    if ($.exists('#contact-form #submit')) {
+        $('#st-alert').hide();
+        $('#contact-form #submit').on('click', function () {
+            var name = $('#name').val();
+            var subject = $('#subject').val();
+            var phone = $('#phone').val();
+            var email = $('#email').val();
+            var msg = $('#msg').val();
+            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-    // Form submission handling for contact form
-    $('#contact-form').on('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        const formData = new FormData(this);
-        
-        // Serialize form data for sending
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            subject: formData.get('subject'),
-            msg: formData.get('msg')
-        };
-
-        // Send form data using fetch
-        sendFormData('/.netlify/functions/send-email', data);
-    });
-
-    async function sendFormData(url, data) {
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                showToast('success', result.message); // Show success toast
-            } else {
-                showToast('danger', result.message); // Show error toast
+            if (!regex.test(email)) {
+                $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
+                return false;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast('danger', 'Failed to send request. Please try again later.'); // Show error toast
-        }
-    }
 
-    function showToast(type, message) {
-        const toastHtml = `
-            <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        `;
-        $('#st-alert').append(toastHtml); // Append toast to alert container
-        $('.toast').toast({ delay: 5000 }); // Set duration for the toast
-        $('.toast').toast('show'); // Show the toast
+            name = $.trim(name);
+            subject = $.trim(subject);
+            phone = $.trim(phone);
+            email = $.trim(email);
+            msg = $.trim(msg);
+
+            if (name !== '' && email !== '' && msg !== '') {
+                var values = JSON.stringify({
+                    name: name,
+                    subject: subject,
+                    phone: phone,
+                    email: email,
+                    msg: msg
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "/.netlify/functions/send-email",
+                    contentType: "application/json",
+                    data: values,
+                    success: function () {
+                        $('#name').val('');
+                        $('#subject').val('');
+                        $('#phone').val('');
+                        $('#email').val('');
+                        $('#msg').val('');
+
+                        $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Email has been sent successfully.</div>');
+                        setTimeout(function () {
+                            $('#st-alert').fadeOut('slow');
+                        }, 4000);
+                    },
+                    error: function () {
+                        $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> Something went wrong.</div>');
+                    }
+                });
+            } else {
+                $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
+            }
+            return false;
+        });
     }
+}
 
 
 
